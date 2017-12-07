@@ -3,28 +3,53 @@
  */
 
 
-
 public class exercise3 {
 
 
 
-    public String LCS(char[] str1, char[] str2, int str1Pos, int str2Pos,String result){
-        if(str1Pos<0 || str2Pos<0)
-            return result;
+    public String LCS(char[] str1,char[] str2){
+        int[][] dp = new int[str1.length+1][str2.length+1];
+        for(int i = 0;i<str1.length;i++){
+            for(int j = 0 ;j<str2.length;j++){
+                if(str1[i] == str2[j])
+                    dp[i+1][j+1] = dp[i][j]+1;
+                else{
+                    if(dp[i][j+1] >= dp[i+1][j])
+                        dp[i+1][j+1] = dp[i][j+1];
+                    else
+                        dp[i+1][j+1] = dp[i+1][j];
+                }
+
+            }
+        }
+
+        int length = dp[str1.length][str2.length];
+        char[] n = new char[length];
+        getLCS(dp,str1.length,str2.length,str1,str2,n,length-1);
+        return String.valueOf(n);
+//        return "";
+    }
+
+    private void getLCS(int[][] dp,int i,int j,char[] c,char[] d,char[] result,int length){
+
+        if(i==0 || j==0)
+            return;
+
+        if(c[i-1] == d[j-1]) {
+            result[length] = c[i-1];
+            getLCS(dp, i - 1, j - 1, c, d, result,length-1);
+        }
         else{
-            if(str1[str1Pos] == str2[str2Pos])
-                return LCS(str1,str2,str1Pos-1,str2Pos-1,str1[str1Pos]+result);
-            else{
-                String left = LCS(str1,str2,str1Pos,str2Pos-1,result);
-                String right = LCS(str1,str2,str1Pos-1,str2Pos,result);
-                return left.length()<right.length()?right:left;
+            if(dp[i-1][j] >= dp[i][j-1]){
+                getLCS(dp,i-1,j,c,d,result,length);
+            }else{
+                getLCS(dp,i,j-1,c,d,result,length);
             }
         }
     }
 
     public static void main(String[] args){
         exercise3 exercise3 = new exercise3();
-        String result = exercise3.LCS("ABCBDAB".toCharArray(),"BDCABA".toCharArray(),6,5,"");
-        System.out.println(result);
+        System.out.println(exercise3.LCS(new char[]{'a','b','c','d','a'},new char[]{'a','d','c','b','a'}));
     }
 }
